@@ -1,0 +1,12 @@
+#this analysis requires running the accidents analysis first
+
+#creating a logical variable to store if a person's record is in the accident datasets
+PALL_ET$LOG_ETCT_E <- 'FALSE'
+PALL_CT$LOG_ETCT_E <- 'FALSE'
+PALL_ET$LOG_ETCT_W <- 'FALSE'
+PALL_CT$LOG_ETCT_W <- 'FALSE'
+PALL_ET$LOG_ETCT_E <- as.logical(PALL_ET$LOG_ETCT_E)
+PALL_ET$LOG_ETCT_W <- as.logical(PALL_ET$LOG_ETCT_W)
+PALL_CT$LOG_ETCT_E <- as.logical(PALL_CT$LOG_ETCT_E)
+PALL_CT$LOG_ETCT_W <- as.logical(PALL_CT$LOG_ETCT_W)
+
