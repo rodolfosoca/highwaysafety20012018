@@ -1,0 +1,163 @@
+##import accident level data from aall.csv file and person data from pall.csvfile
+#this is needed only if data not available
+
+library(readr)
+aall <- read_csv("aall0118.csv")
+pall <- read_csv("pall0118.csv")
+
+# remove colum X1 that is created when the CSV file was red
+#not needed if not reading from the CSV
+
+aall$X1 <- NULL
+pall$X1 <- NULL
+
+#Creating a variable to store the time of the accident as 1-24 rather than 0-1
+aall$HOUR1 <- aall$HOUR+1
+pall$HOUR1 <- pall$HOUR + 1
+
+aall$HOUR30 <- aall$HOUR1 + aall$HOUR30
+pall$HOUR30 <- pall$HOUR1 + pall$HOUR30
+
+#changing hour 30 to a number between 1 and 48, this number will be used to do a cycle later and count accidents by 30 minutes interval
+aall$HOUR30 <- ((aall$HOUR30-0.5)/0.5)
+
+#Creating a variable to store time of accident by 30 minutes 0000 to 0030 will 0, 0030 to 0059 will 0.5
+aall$HOUR30 <- ifelse (aall$MINUTE >= 0 & aall$MINUTE <= 29, 0, 0.5)  
+pall$HOUR30 <- ifelse (pall$MINUTE >= 0 & pall$MINUTE <= 29, 0, 0.5) 
+
+#removing accidents with times that do not match, either hour higher than 23 (some may have hour 24 which is not clear) and minute > 99
+aall <- subset (aall, HOUR <=23)
+aall <- subset (aall, MINUTE <=59)
+pall <- subset (pall, HOUR <=23)
+pall <- subset (pall, MINUTE <= 59)
+
+#Eliminating accident records with latitude and longitude that is clearly outside the continental US points
+aall <- subset (aall, LAT < 60 & LAT > 24 & LON < -65 & LON > -125,)
+
+# excludes some states that behave abnormaly
+#02 Alaska, 04 Arizona, 15 Hawaii,  16 Idaho
+#18 Indiana, 21 Kentucky, 31 Nebraska, 38 North Dakota, 
+#46 South Dakota,47 Tennessee, 52 Virgin Islands, 43 Puerto Rico
+
+# some counties in Florida, Michigan, and Texas will be excluded later since they are in a different timezone
+aall <-subset(aall, STATE==1 | STATE==5 | STATE==16 | STATE== 8 |STATE==9| STATE==10 | STATE==11|STATE==12|STATE==13|STATE==17| STATE==19| STATE==20| STATE==22| STATE==23|STATE==24|STATE==25|STATE==26|STATE==27|STATE==28|STATE==29|STATE==29|STATE==32|STATE==33|STATE==34|STATE==35|STATE==36|STATE==37|STATE==39|STATE==40|STATE==41|STATE==42|STATE==44|STATE==45|STATE==48|STATE==49|STATE==50|STATE==51|STATE==53|STATE==54|STATE==55|STATE==56,)
+
+#the same for people dataset
+pall <-subset(pall, STATE==1 | STATE==5 | STATE==16 | STATE== 8 |STATE==9| STATE==10 | STATE==11|STATE==12|STATE==13|STATE==17| STATE==19| STATE==20| STATE==22| STATE==23|STATE==24|STATE==25|STATE==26|STATE==27|STATE==28|STATE==29|STATE==29|STATE==32|STATE==33|STATE==34|STATE==35|STATE==36|STATE==37|STATE==39|STATE==40|STATE==41|STATE==42|STATE==44|STATE==45|STATE==48|STATE==49|STATE==50|STATE==51|STATE==53|STATE==54|STATE==55|STATE==56,)
+
+#eliminating accidents on the areas of florida that are outisde the ET by eliminating all accidents west of lon -84-28 which corresponds to Tallahassee 
+aall <-aall[!(aall$STATE==12 & all$LON< -84.28),]
+
+#eliminating accidents in Michigan that could be in another time zone eliminating all accidents west of long - 86.52
+aall <-aall[!(aall$STATE==27 & aall$LON< -86.52),]
+
+# eliminating accidents in texas that are west of Longitud -103 since they are on MT
+aall <-aall[!(aall$STATE==48 & aall$LON< -103),]
+
+#focusing only in states in the ET and CT zones, dropping all other states for both datasets
+AALL_CT <- subset (aall, STATE==1 | STATE==5 | STATE==17 | STATE==19 | STATE==20 | STATE==22 | STATE==27 | STATE==28 | STATE==29 | STATE==40 | STATE==48 | STATE==55,)
+AALL_ET <- subset (aall, STATE==9 | STATE==10 | STATE==11 | STATE==12 | STATE==13| STATE== 23 | STATE==24| STATE==25 | STATE== 26|STATE==33 | STATE==34|STATE==36|STATE==37 | STATE==39|STATE==44 | STATE==45 | STATE==50 | STATE==51 |STATE==54,)
+
+PALL_ET <- subset (pall, STATE==9 | STATE==10 | STATE==11 | STATE==12 | STATE==13| STATE== 23 | STATE==24| STATE==25 | STATE== 26|STATE==33 | STATE==34|STATE==36|STATE==37 | STATE==39|STATE==44 | STATE==45 | STATE==50 | STATE==51 |STATE==54,)
+PALL_CT <- subset (pall, STATE==1 | STATE==5 | STATE==17 | STATE==19 | STATE==20 | STATE==22 | STATE==27 | STATE==28 | STATE==29 | STATE==40 | STATE==48 | STATE==55,)
+
+# create a subset with accidents that happen in the extreme east of the ET
+ACC_ET_EAST <- subset (AALL_ET, LON > -71.25,)
+
+# create a subset of accidents on the West part 
+ACC_ET_WEST <- subset (AALL_ET, LON < -78.75, )
+
+# create a subset with accidents that happen in the extreme east of the CT
+ACC_CT_EAST <- subset (AALL_CT, LON > -86.25,)
+
+# create a subset of accidents on the West part 
+ACC_CT_WEST <- subset (AALL_CT, LON < -93.75, )
+
+#combining the accidents on ET E and CT E and then the same for West part
+#there is probably a more elegant way of doing this  insteat of divigind the accidents by time zone and then finding the extremes
+ACC_ETCT_E <- rbind (ACC_ET_EAST, ACC_CT_EAST)
+ACC_ETCT_W <- rbind (ACC_ET_WEST, ACC_CT_WEST)
+
+#Creating vectors to store the count of accidents using a 24 hour format to graph accidents 
+COUNT_ETCT24_E <- c(1:24)
+COUNT_ETCT24_W <- c(1:24)
+
+
+# doing a for cycle to count accidents in both ends of ET, CT, and PT and then binding results together
+for (i in 1:24) {COUNT_ETCT24_E[i] <- sum (ACC_ETCT_E$HOUR1 == i)}
+for (i in 1:24) {COUNT_ETCT24_W[i] <- sum (ACC_ETCT_W$HOUR1 == i)}
+
+#creating a dataset to store the total count of accidents and writing a CSV file in case it is needed later
+COUNT_ETCT24 <- rbind (COUNT_ETCT24_E, COUNT_ETCT24_W)
+write.csv(COUNT_ETCT24, 'countetct24.csv')
+
+
+# duplicate Count_total dataset to store the same numbers as percentage
+PERCENT_ETCT_24 <- COUNT_ETCT24
+
+
+#Create a variable with the total number of accidents in East [1] and West [2]
+TOTAL_COUNT <- c (1:2)
+#assigning the sum value to each
+for (i in 1:2) {TOTAL_COUNT[i] <- sum(COUNT_ETCT24[i,1:24])}
+
+
+#calculate percentages
+for (i in 1:24) { 
+  for (j in 1:2) {PERCENT_ETCT_24[j,i] <- (COUNT_ETCT24[j,i]/ TOTAL_COUNT[j])}}
+#writing this file as a CSV file in case it is needed later
+write.csv(PERCENT_ETCT_24, 'percent_etcT24.csv')
+
+#creating a time series variable to do cross correlation analysis
+TS24_W <- ts (PERCENT_ETCT_24 [2,])
+TS24_E <- ts (PERCENT_ETCT_24 [1,])
+
+
+#creating a variable to store the percentage of accidents in each ET and CT East and West areas
+PERCENTAGE_ETCT_E <- c (1:24)
+PERCENTAGE_ETCT_W <- c (1:24)
+
+
+#doing cross correlation analysis on 24 hour, this will be more useful when usin 30 minut intervals
+Crosscor <- ccf(TS24_E,TS24_W, lag.max = 3)
+
+#creating a plot
+plot (PERCENT_ETCT_24[1,],type='l', col='red')
+lines (PERCENT_ETCT_24 [2,], type='l', col='blue')
+
+#Creating vectors to store the count of accidents using 30 minute interval format to graph accidents 
+COUNT_ETCT48_E <- c(1:48)
+COUNT_ETCT48_W <- c(1:48)
+
+for (i in 1:48) {COUNT_ETCT48_E[i] <- sum (ACC_ETCT_E$HOUR48 == i)}
+for (i in 1:48) {COUNT_ETCT48_W[i] <- sum (ACC_ETCT_W$HOUR48 == i)}
+
+#creating a dataset to store the count of accident using 30 minute intervals
+COUNT_ETCT48 <- rbind (COUNT_ETCT48_E, COUNT_ETCT48_W)
+
+#Duplicating that variable to store the percentages
+PERCENT_ETCT_48 <- COUNT_ETCT48
+
+#calculating percentage of accidents by 30 minute intervals
+for (i in 1:48) {  for (j in 1:2) {PERCENT_ETCT_48[j,i] <- (COUNT_ETCT48[j,i]/ TOTAL_COUNT[j])}}
+
+TS48_W <- ts (PERCENT_ETCT_48 [2,])
+TS48_E <- ts (PERCENT_ETCT_48 [1,])
+
+#doing cross correlation analysis on 48 variables
+Crosscor <- ccf(TS48_E,TS48_W, lag.max = 5)
+
+#removing variables that were created and are not needed
+rm (aall, AALL_CT, AALL_ET, ACC_CT_EAST, ACC_CT_WEST,ACC_ET_EAST,ACC_ET_WEST)
+
+#Removing variables that are not needed for persons analysis. NOTE this variables are needed for graphs and other
+rm (COUNT_ETCT24,COUNT_ETCT24_E,COUNT_ETCT24_W,COUNT_ETCT48,COUNT_ETCT48_E,COUNT_ETCT48_W)
+
+rm (Crosscor, PERCENT_ETCT_24,PERCENT_ETCT_48)
+rm (i,j,PERCENTAGE_ETCT_E,PERCENTAGE_ETCT_W)
+
+rm (TOTAL_COUNT,TS24_E,TS24_W,TS48_E,TS48_W)
+
+
+
+
