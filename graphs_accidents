@@ -1,0 +1,50 @@
+#Accident graphs
+#takes information from a dataset already created that has all the accidents, 
+library(readr)
+PERCENT_ETCT_ALL_graph <- read_csv("PERCENT_ETCT_ALL_graph.csv")
+
+PERCENT_ETCT_ALL_graph$X1<- NULL
+
+#creating a variable to store each accident to use graphs then
+ACCIDENTS_ALL <- c (1:24)
+ACCIDENTS_E <- c (1:24)
+ACCIDENTS_W <- c (1:24)
+
+#Extract values from dataset using for loops
+for (i in 1:24) {ACCIDENTS_E[i] <- PERCENT_ETCT_ALL_graph[1,i]}
+for (i in 1:24) {ACCIDENTS_W[i] <- PERCENT_ETCT_ALL_graph[2,i]}
+for (i in 1:24) {ACCIDENTS_ALL[i] <- PERCENT_ETCT_ALL_graph[3,i]}
+
+#changing the variables back to vector type since the above operation creates a list
+ACCIDENTS_ALL <- unlist (ACCIDENTS_ALL)
+ACCIDENTS_E <- unlist (ACCIDENTS_E)
+ACCIDENTS_W <- unlist (ACCIDENTS_W)
+
+plot (ACCIDENTS_W, type='o', col='blue', pch="o", lty=1, ylim=c(2,6.5), ylab=NULL)
+
+points(ACCIDENTS_ALL, col="black", pch="*")
+lines(ACCIDENTS_ALL, lty=2, col="black")
+
+points(ACCIDENTS_E, col="red", pch="+")
+lines (ACCIDENTS_E, lty= 3, col='red' )
+
+# Adding a legend inside box at the location (2,40) in graph coordinates.
+# Note that the order of plots are maintained in the vectors of attributes.
+legend(16,3.5,legend=c("All Accidents","Eastern","Western"), col=c("black","red","blue"),
+       pch=c("*","+","o"),lty=c(2,3,1), ncol=1)
+
+###This creates a plot for all accidents
+plot (ACCIDENTS_ALL, type='l', col='black', ylim=c(2,6.5), ylab="", xlab= "", xaxt="n")
+#creating a vector to store the Axis
+x <- c(0,3,6,9,12,15,18,21,24)
+axis(1, at=x,labels=x, col.axis="black", las=1)
+legend(14,3.5,legend=c("All Accidents EST and CST"), col=c("black"),
+       lty=c(1), ncol=1)
+title (main= "All Accidents in the EST and CST of the US 2001 to 2018")
+
+#this creates a plot for accidents on EST vs CST
+plot (ACCIDENTS_W, type='l', col='blue', lty=2, ylim=c(2,6.5), ylab="", xlab= "", xaxt="n")
+lines (ACCIDENTS_E, type='l', lty= 3, col='red' )
+legend(14,3.5,legend=c("Accidents Eastern EST & CST", "Accidents Western EST & CSTT"), col=c("red", "blue"),lty=c(2,3), ncol=1)
+title (main= "Accidents in the extreme Eastern and Westrn portions of EST and CST")
+axis(1, at=x,labels=x, col.axis="black", las=1)
