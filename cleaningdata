@@ -54,6 +54,19 @@ aall <-aall[!(aall$STATE==27 & aall$LON< -86.52),]
 # eliminating accidents in texas that are west of Longitud -103 since they are on MT
 aall <-aall[!(aall$STATE==48 & aall$LON< -103),]
 
+#creating a subset of all accidents for ET and CT to create a graph using 24 hours
+AALL_ETCT_RAW <-subset (aall, STATE==1 | STATE==5 | STATE==17 | STATE==19 | STATE==20 | STATE==22 | STATE==27 | STATE==28 | STATE==29 | STATE==40 | STATE==48 | STATE==55 | STATE==9 | STATE==10 | STATE==11 | STATE==12 | STATE==13| STATE== 23 | STATE==24| STATE==25 | STATE== 26|STATE==33 | STATE==34|STATE==36|STATE==37 | STATE==39|STATE==44 | STATE==45 | STATE==50 | STATE==51 |STATE==54,)
+
+#Creating a variable to count all accidents on ET and CT for graph using 24 hours
+COUNT_ETCT_RAW <- c(1:24)
+#counting accidents
+for (i in 1:24) {COUNT_ETCT_RAW[i] <- sum (AALL_ETCT_RAW$HOUR1 == i)}
+
+#creating a variable to store percentages
+PERCENT_ETCT_RAW <-COUNT_ETCT_RAW
+for (i in 1:24) {PERCENT_ETCT_RAW[i] <- COUNT_ETCT_RAW[i] / sum(COUNT_ETCT_RAW[1:24])}
+PERCENT_ETCT_RAW <- PERCENT_ETCT_RAW * 100
+
 #focusing only in states in the ET and CT zones, dropping all other states for both datasets
 AALL_CT <- subset (aall, STATE==1 | STATE==5 | STATE==17 | STATE==19 | STATE==20 | STATE==22 | STATE==27 | STATE==28 | STATE==29 | STATE==40 | STATE==48 | STATE==55,)
 AALL_ET <- subset (aall, STATE==9 | STATE==10 | STATE==11 | STATE==12 | STATE==13| STATE== 23 | STATE==24| STATE==25 | STATE== 26|STATE==33 | STATE==34|STATE==36|STATE==37 | STATE==39|STATE==44 | STATE==45 | STATE==50 | STATE==51 |STATE==54,)
