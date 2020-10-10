@@ -153,6 +153,12 @@ rm (p01, p02, p03, p04, p05,p06,p07,p08,p09, p10,p11,p12,p13,p14,p15,p16,p17,p18
 #aall has the information for all accidents in the entire US from 2001 and 2018
 #pall has the information for all the individuals involved in accidents between 2001 and 2018
 
+#removing accidents with times that do not match, either hour higher than 23 (some may have hour 24 which is not clear) and minute > 99
+aall <- subset (aall, HOUR <=23)
+aall <- subset (aall, MINUTE <=59)
+pall <- subset (pall, HOUR <=23)
+pall <- subset (pall, MINUTE <= 59)
+
 #Creating a variable to store the time of the accident as 1-24 rather than 0-1
 aall$HOUR1 <- aall$HOUR+1
 pall$HOUR1 <- pall$HOUR + 1
@@ -168,6 +174,32 @@ pall$HOUR30 <- ifelse (pall$MINUTE >= 0 & pall$MINUTE <= 29, 0, 0.5)
 aall$HOUR30 <- aall$HOUR1 + aall$HOUR30
 pall$HOUR30 <- pall$HOUR1 + pall$HOUR30
 
-
 #changing hour 30 to a number between 1 and 48, this number will be used to do a cycle later and count accidents by 30 minutes interval
 aall$HOUR30 <- ((aall$HOUR30-0.5)/0.5)
+
+#creating a logical value for young people based on age < = 25
+pall$log_YOUNG <- ifelse(pall$AGE <=25, 'YOUNG', 'NOTYOUNG')
+
+#creating a logical value for young people based on age < = 65
+pall$log_ELDER <- ifelse(pall$AGE >=65, 'ELDER', 'NOTELDER')
+
+### keeping only those individuals that have a known gender: 1= male 2 female
+pall <- subset (pall, SEX <=2)
+
+#Creating a variable that stores gender as text MALE or FEmale:
+pall$GENDER <- ifelse(pall$SEX ==1, 'male', 'female')
+
+#keeping only drivers
+pall <- subset (pall, PER_TYP==1,)
+
+#Creating a variable if an accident happened between 0 and 5 hours
+pall$log_early <- ifelse(pall$HOUR <=5,'00to05AM', 'NOT00to05AM')
+aall$log_early <- ifelse(aall$HOUR <=5,'00to05AM', 'NOT00to05AM')
+
+#Creating a variable if an accident happened late (15 to 23 hours)
+pall$log_late <- ifelse(pall$HOUR >=15,'15toMN', 'NOT15toMN')
+aall$log_late <- ifelse(aall$HOUR >=15,'15toMN', 'NOT15toMN')
+
+#Eliminating accident records with latitude and longitude that is clearly outside the continental US points
+aall <- subset (aall, LAT < 60 & LAT > 24 & LON < -65 & LON > -125,)
+
