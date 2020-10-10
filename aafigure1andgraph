@@ -1,0 +1,73 @@
+#creating the tables that are needed to map accidents.
+#graphs look better by 24 hours but the analysis will be done by 30 minute intervals
+
+
+#Creating vectors to store the count of accidents using a 24 hour format to graph accidents 
+COUNT_ETCT24_E <- c(1:24)
+COUNT_ETCT24_W <- c(1:24)
+
+#counting accidents that happened on easten and western portions of ETand CT
+for (i in 1:24) {COUNT_ETCT24_E[i] <- sum (ACC_ETCT_E$HOUR1 == i)}
+for (i in 1:24) {COUNT_ETCT24_W[i] <- sum (ACC_ETCT_W$HOUR1 == i)}
+
+#creating a dataset to store the total count of accidents and writing a CSV file in case it is needed later
+COUNT_ETCT24_E_W <- rbind (COUNT_ETCT24_E, COUNT_ETCT24_W)
+
+#creating variables to store the percentage of accidents that each hour represents.
+PERCENTAGE_ETCT24_E <- c(1:24)
+PERCENTAGE_ETCT24_W <- c(1:24)
+
+#calculating percentages
+for (i in 1:24) {PERCENTAGE_ETCT24_E[i] <- (COUNT_ETCT24_E[i] / sum(COUNT_ETCT24_E))}
+for (i in 1:24) {PERCENTAGE_ETCT24_W[i] <- (COUNT_ETCT24_W[i] / sum(COUNT_ETCT24_W))}
+PERCENTAGE_ETCT24_E <- PERCENTAGE_ETCT24_E * 100
+PERCENTAGE_ETCT24_W <- PERCENTAGE_ETCT24_W * 100
+
+# creating a dataset with percentages:
+PERCENTAGE_ETCT24_E_W <- rbind (PERCENTAGE_ETCT24_E, PERCENTAGE_ETCT24_W)
+
+
+#Creating vectors to store the count of accidents using 30 minute interval format to graph accidents 
+COUNT_ETCT48_E <- c(1:48)
+COUNT_ETCT48_W <- c(1:48)
+
+for (i in 1:48) {COUNT_ETCT48_E[i] <- sum (ACC_ETCT_E$HOUR30 == i)}
+for (i in 1:48) {COUNT_ETCT48_W[i] <- sum (ACC_ETCT_W$HOUR30 == i)}
+
+#creating a dataset to store the count of accident using 30 minute intervals
+COUNT_ETCT48 <- rbind (COUNT_ETCT48_E, COUNT_ETCT48_W)
+
+#creating a variable to store percentage of accidents by 30 minutes
+PERCENTAGE_ETCT48_E <- c(1:48)
+PERCENTAGE_ETCT48_W <- c(1:48)
+
+#calculating percentage of accidents by 30 minute intervals
+for (i in 1:48) {PERCENTAGE_ETCT48_E[i] <- (COUNT_ETCT48_E[i]/ sum(COUNT_ETCT48_E))}
+for (i in 1:48) {PERCENTAGE_ETCT48_W[i] <- (COUNT_ETCT48_W[i]/ sum(COUNT_ETCT48_W))}
+
+#changing to 100%
+PERCENTAGE_ETCT48_E <-PERCENTAGE_ETCT48_E * 100
+PERCENTAGE_ETCT48_W <-PERCENTAGE_ETCT48_W * 100
+
+#creating a dataset with all the percentages at 30 minutes (48)
+PERCENTAGE_ETCT48_E_W <- rbind (PERCENTAGE_ETCT48_E, PERCENTAGE_ETCT48_W)
+
+#Creating time series for the analysis
+TS48_W <- ts (PERCENTAGE_ETCT48_W)
+TS48_E <- ts (PERCENTAGE_ETCT48_E)
+
+#doing cross correlation analysis on 48 variables
+Crosscor <- ccf(TS48_E,TS48_W, lag.max = 5)
+
+#creating a plot
+plot (PERCENTAGE_ETCT24_E,type='l', col='red')
+lines (PERCENTAGE_ETCT24_W, type='l', col='blue')
+
+#creating a plot with lines that have "zeros"
+plot (PERCENTAGE_ETCT24_E, type='o', col='blue', pch="o", lty=1, ylim=c(2,6.5), ylab=NULL)
+lines(PERCENTAGE_ETCT24_W, col="black", pch="*")
+
+# Adding a legend inside box at the location (2,40) in graph coordinates.
+# Note that the order of plots are maintained in the vectors of attributes.
+legend(16,3.5,legend=c("Eastern","Western"), col=c("blue","black"),
+       pch=c("o", "*"),lty=c(2,1), ncol=1)
