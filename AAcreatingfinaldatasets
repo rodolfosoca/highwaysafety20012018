@@ -1,0 +1,173 @@
+###Creating the DATASETS that will be used to work
+
+#import each accident CSV file
+
+library(readr)
+a01 <- read_csv("a01.CSV")
+a02 <- read_csv("a02.CSV")
+a03 <- read_csv("a03.CSV")
+a04 <- read_csv("a04.CSV")
+a05 <- read_csv("a05.CSV")
+a06 <- read_csv("a06.CSV")
+a07 <- read_csv("a07.CSV")
+a08 <- read_csv("a08.CSV")
+a09 <- read_csv("a09.CSV")
+a10 <- read_csv("a10.CSV")
+a11 <- read_csv("a11.CSV")
+a12 <- read_csv("a12.CSV")
+a13 <- read_csv("a13.CSV")
+a14 <- read_csv("a14.CSV")
+a15 <- read_csv("a15.CSV")
+a16 <- read_csv("a16.CSV")
+a17 <- read_csv("a17.CSV")
+a18 <- read_csv("a18.CSV")
+
+# Adding a year column, making this column a "double" and then creating a unique ID that uses the forma year0000000. It needs 7 zeros to include all the ST IDS
+a01$YEAR <- 2001
+a01$YEAR <- as.double(a01$YEAR)
+a01$U_ID <- 20010000000 + a01$ST_CASE
+
+a02$YEAR <- 2002
+a02$YEAR <- as.double(a02$YEAR)
+a02$U_ID <- 20020000000 + a02$ST_CASE
+
+a03$YEAR <- 2003
+a03$YEAR <- as.double(a03$YEAR)
+a03$U_ID <- 20030000000 + a03$ST_CASE
+
+a04$YEAR <- 2004
+a04$YEAR <- as.double(a04$YEAR)
+a04$U_ID <- 20040000000 + a04$ST_CASE
+
+a05$YEAR <- 2005
+a05$YEAR <- as.double(a05$YEAR)
+a05$U_ID <- 20050000000 + a05$ST_CASE
+
+a06$YEAR <- 2006
+a06$YEAR <- as.double(a06$YEAR)
+a06$U_ID <- 20060000000 + a06$ST_CASE
+
+
+a07$YEAR <- 2007
+a07$YEAR <- as.double(a07$YEAR)
+a07$U_ID <- 20070000000 + a07$ST_CASE
+
+a08$YEAR <- 2008
+a08$YEAR <- as.double(a08$YEAR)
+a08$U_ID <- 20080000000 + a08$ST_CASE
+
+a09$YEAR <- 2009
+a09$YEAR <- as.double(a09$YEAR)
+a09$U_ID <- 20090000000 + a09$ST_CASE
+
+#For years 2010  deleting city variable, year is already included. Only need to create unique ID
+a10$CITY <- NULL
+a10$U_ID <- 20100000000 + a10$ST_CASE
+
+#For Year 2011, 2012,  only need to create unique id
+a11$U_ID <- 20110000000 + a11$ST_CASE
+a12$U_ID <- 20120000000 + a12$ST_CASE
+
+#for 2013, deleting city and then creating unique ID
+a13$CITY <- NULL
+a13$U_ID <- 20130000000 + a13$ST_CASE
+
+#for 2014,2015 creating unique id
+a14$U_ID <- 20140000000 + a14$ST_CASE
+a15$U_ID <- 20150000000 + a15$ST_CASE
+a16$U_ID <- 20160000000 + a16$ST_CASE
+a17$U_ID <- 20170000000 + a17$ST_CASE
+a18$U_ID <- 20180000000 + a18$ST_CASE
+
+#creating a dataset with all accidents and then deleting the individual datasets
+aall <- rbind(a01,a02,a03,a04,a05,a06,a07,a08, a09,a10,a11,a12,a13,a14,a15,a16,a17,a18)
+rm (a01,a02,a03,a04,a05,a06,a07,a08, a09,a10,a11,a12,a13,a14,a15,a16,a17,a18)
+
+#save dataset as a csv file aall0118.csv to use later if needed
+
+### Importing Person datafiles
+p01 <- read_csv("p01.csv")
+p02 <- read_csv("p02.csv")
+p03 <- read_csv("p03.csv")
+p04 <- read_csv("p04.csv")
+p05 <- read_csv("p05.csv")
+p06 <- read_csv("p06.csv")
+p07 <- read_csv("p07.csv")
+p08 <- read_csv("p08.csv")
+p09 <- read_csv("p09.csv")
+p10 <- read_csv("p10.csv")
+p11 <- read_csv("p11.csv")
+p12 <- read_csv("p12.csv")
+p13 <- read_csv("p13.csv")
+p14 <- read_csv("p14.csv")
+p15 <- read_csv("p15.csv")
+p16 <- read_csv("p16.csv")
+p17 <- read_csv("p17.csv")
+p18 <- read_csv("p18.csv")
+
+#Creating a YEAR column for 2018
+p18$YEAR <- 2018
+p18$YEAR <- as.double (p18$YEAR)
+
+#Removing Variable X1 for years 05 to 17
+p05$X1 <- NULL
+p06$X1 <- NULL
+p07$X1 <- NULL
+p08$X1 <- NULL
+p09$X1 <- NULL
+p10$X1 <- NULL
+p11$X1 <- NULL
+p12$X1 <- NULL
+p13$X1 <- NULL
+p14$X1 <- NULL
+p15$X1 <- NULL
+p16$X1 <- NULL
+p17$X1 <- NULL
+
+#Creating a U-ID variable for Persons datasets
+p01$U_ID <- 20010000000 + p01$ST_CASE
+p02$U_ID <- 20020000000 + p02$ST_CASE
+p03$U_ID <- 20030000000 + p03$ST_CASE
+p04$U_ID <- 20040000000 + p04$ST_CASE
+p05$U_ID <- 20050000000 + p05$ST_CASE
+p06$U_ID <- 20060000000 + p06$ST_CASE
+p07$U_ID <- 20070000000 + p07$ST_CASE
+p08$U_ID <- 20080000000 + p08$ST_CASE
+p09$U_ID <- 20090000000 + p09$ST_CASE
+p10$U_ID <- 20100000000 + p10$ST_CASE
+p11$U_ID <- 20110000000 + p11$ST_CASE
+p12$U_ID <- 20120000000 + p12$ST_CASE
+p13$U_ID <- 20130000000 + p13$ST_CASE
+p14$U_ID <- 20140000000 + p14$ST_CASE
+p15$U_ID <- 20150000000 + p15$ST_CASE
+p16$U_ID <- 20160000000 + p16$ST_CASE
+p17$U_ID <- 20170000000 + p17$ST_CASE
+p18$U_ID <- 20180000000 + p18$ST_CASE
+
+pall <- rbind (p01, p02, p03, p04, p05,p06,p07,p08,p09, p10,p11,p12,p13,p14,p15,p16,p17,p18)
+
+rm (p01, p02, p03, p04, p05,p06,p07,p08,p09, p10,p11,p12,p13,p14,p15,p16,p17,p18)
+
+#This should lead to the creation of two datasets 'aall' and 'pall' as well as two CSV files that can be imported later if needed
+
+#aall has the information for all accidents in the entire US from 2001 and 2018
+#pall has the information for all the individuals involved in accidents between 2001 and 2018
+
+#Creating a variable to store the time of the accident as 1-24 rather than 0-1
+aall$HOUR1 <- aall$HOUR+1
+pall$HOUR1 <- pall$HOUR + 1
+
+#Creating a variable to store time of accident by 30 minutes 0000 to 0030 will 0, 0030 to 0059 will 0.5
+aall$HOUR30 <- ifelse (aall$MINUTE >= 0 & aall$MINUTE <= 29, 0, 0.5)  
+pall$HOUR30 <- ifelse (pall$MINUTE >= 0 & pall$MINUTE <= 29, 0, 0.5) 
+
+#storing the time of accident as the hour+1 "+" the fraction of time it occurred.
+#an accident that happened at 0015 hours will show as: 1 (0 hours becomes 1 as HOUR1 and the minutes are between 00 and 29)
+#an accident happening at 0045 hours becomes 1.5 (o becomes 1 and then add 0.5 because the minutes are between 29 and 59)
+
+aall$HOUR30 <- aall$HOUR1 + aall$HOUR30
+pall$HOUR30 <- pall$HOUR1 + pall$HOUR30
+
+
+#changing hour 30 to a number between 1 and 48, this number will be used to do a cycle later and count accidents by 30 minutes interval
+aall$HOUR30 <- ((aall$HOUR30-0.5)/0.5)
