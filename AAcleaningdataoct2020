@@ -1,0 +1,81 @@
+### this portion of the analysis uses the datasets 'aall' and 'pall' that were created previously. 
+
+
+
+# excludes some states that behave abnormaly
+#02 Alaska, 04 Arizona, 15 Hawaii,  16 Idaho
+#18 Indiana, 21 Kentucky, 31 Nebraska, 38 North Dakota, 
+#46 South Dakota,47 Tennessee, 52 Virgin Islands, 43 Puerto Rico
+
+aall <-subset(aall, STATE==1 | STATE==5 | STATE==16 | STATE== 8 |STATE==9| STATE==10 | STATE==11|STATE==12|STATE==13|STATE==17| STATE==19| STATE==20| STATE==22| STATE==23|STATE==24|STATE==25|STATE==26|STATE==27|STATE==28|STATE==29|STATE==29|STATE==32|STATE==33|STATE==34|STATE==35|STATE==36|STATE==37|STATE==39|STATE==40|STATE==41|STATE==42|STATE==44|STATE==45|STATE==48|STATE==49|STATE==50|STATE==51|STATE==53|STATE==54|STATE==55|STATE==56,)
+
+#the same for people dataset
+pall <-subset(pall, STATE==1 | STATE==5 | STATE==16 | STATE== 8 |STATE==9| STATE==10 | STATE==11|STATE==12|STATE==13|STATE==17| STATE==19| STATE==20| STATE==22| STATE==23|STATE==24|STATE==25|STATE==26|STATE==27|STATE==28|STATE==29|STATE==29|STATE==32|STATE==33|STATE==34|STATE==35|STATE==36|STATE==37|STATE==39|STATE==40|STATE==41|STATE==42|STATE==44|STATE==45|STATE==48|STATE==49|STATE==50|STATE==51|STATE==53|STATE==54|STATE==55|STATE==56,)
+
+# some counties in Florida, Michigan, and Texas will be excluded since they are in a different timezone
+
+#eliminating accidents on the areas of florida that are outisde the ET by eliminating all accidents west of lon -84-28 which corresponds to Tallahassee 
+aall <-aall[!(aall$STATE==12 & aall$LON< -84.28),]
+
+#eliminating accidents in Michigan that could be in another time zone eliminating all accidents west of long - 86.52
+aall <-aall[!(aall$STATE==27 & aall$LON< -86.52),]
+
+# eliminating accidents in texas that are west of Longitud -103 since they are on MT
+aall <-aall[!(aall$STATE==48 & aall$LON< -103),]
+
+#focusing only in states in the ET and CT zones, dropping all other states for both datasets
+AALL_CT <- subset (aall, STATE==1 | STATE==5 | STATE==17 | STATE==19 | STATE==20 | STATE==22 | STATE==27 | STATE==28 | STATE==29 | STATE==40 | STATE==48 | STATE==55,)
+AALL_ET <- subset (aall, STATE==9 | STATE==10 | STATE==11 | STATE==12 | STATE==13| STATE== 23 | STATE==24| STATE==25 | STATE== 26|STATE==33 | STATE==34|STATE==36|STATE==37 | STATE==39|STATE==44 | STATE==45 | STATE==50 | STATE==51 |STATE==54,)
+
+# create a subset with accidents that happen in the extreme east of the ET
+ACC_ET_EAST <- subset (AALL_ET, LON > -71.25,)
+
+# create a subset of accidents on the West part 
+ACC_ET_WEST <- subset (AALL_ET, LON < -78.75, )
+
+# create a subset with accidents that happen in the extreme east of the CT
+ACC_CT_EAST <- subset (AALL_CT, LON > -86.25,)
+
+# create a subset of accidents on the West part 
+ACC_CT_WEST <- subset (AALL_CT, LON < -93.75, )
+
+#combining the accidents on ET E and CT E and then the same for West part
+#there is probably a more elegant way of doing this  insteat of divigind the accidents by time zone and then finding the extremes
+ACC_ETCT_E <- rbind (ACC_ET_EAST, ACC_CT_EAST)
+ACC_ETCT_W <- rbind (ACC_ET_WEST, ACC_CT_WEST)
+
+#Installing tidyverse to use dplyr. and then installing dplyr
+
+install.packages ("tidyverse")
+library (dplyr)
+
+
+
+#creating two smaller datasets with drivers on ET and CT that have gender and are only drivers
+#As of 10/10/2020 this dataset is not needed. keeping it in case we are required to provide numbers for the entire time zones later
+PALL_ET <- subset (pall, STATE==9 | STATE==10 | STATE==11 | STATE==12 | STATE==13| STATE== 23 | STATE==24| STATE==25 | STATE== 26|STATE==33 | STATE==34|STATE==36|STATE==37 | STATE==39|STATE==44 | STATE==45 | STATE==50 | STATE==51 |STATE==54,)
+PALL_CT <- subset (pall, STATE==1 | STATE==5 | STATE==17 | STATE==19 | STATE==20 | STATE==22 | STATE==27 | STATE==28 | STATE==29 | STATE==40 | STATE==48 | STATE==55,)
+
+#keeping only those records of pall that have a matching ID on ACC_ETCT east and west
+pall_ETCT_E <- semi_join(pall, ACC_ETCT_E, by="U_ID")
+pall_ETCT_W <- semi_join(pall, ACC_ETCT_W, by="U_ID")
+
+#creating a logical variable to store if a person belongs to the East extreme of accidents =TRUE or WEST= FAlse
+pall_ETCT_E$log_E <- 'eastESTCST'
+
+
+pall_ETCT_W$log_E <- 'westESTCST'
+
+
+#combining the two variables into 'pall_ETCT_E_W',
+pall_ETCT_E_W <- rbind (pall_ETCT_E,pall_ETCT_W)
+
+#creating a logical variable to store if an accident belongs to the East extreme of accidents =TRUE or WEST= FAlse
+ACC_ETCT_E$log_E <- 'eastESTCST'
+
+
+ACC_ETCT_W$log_E <- 'westESTCST'
+
+
+#combining the two variables into 'ACC_ETCT_E_W', 
+ACC_ETCT_E_W <- rbind (ACC_ETCT_E,ACC_ETCT_W)
