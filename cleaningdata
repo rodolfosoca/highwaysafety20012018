@@ -46,7 +46,7 @@ aall <-subset(aall, STATE==1 | STATE==5 | STATE==16 | STATE== 8 |STATE==9| STATE
 pall <-subset(pall, STATE==1 | STATE==5 | STATE==16 | STATE== 8 |STATE==9| STATE==10 | STATE==11|STATE==12|STATE==13|STATE==17| STATE==19| STATE==20| STATE==22| STATE==23|STATE==24|STATE==25|STATE==26|STATE==27|STATE==28|STATE==29|STATE==29|STATE==32|STATE==33|STATE==34|STATE==35|STATE==36|STATE==37|STATE==39|STATE==40|STATE==41|STATE==42|STATE==44|STATE==45|STATE==48|STATE==49|STATE==50|STATE==51|STATE==53|STATE==54|STATE==55|STATE==56,)
 
 #eliminating accidents on the areas of florida that are outisde the ET by eliminating all accidents west of lon -84-28 which corresponds to Tallahassee 
-aall <-aall[!(aall$STATE==12 & all$LON< -84.28),]
+aall <-aall[!(aall$STATE==12 & aall$LON< -84.28),]
 
 #eliminating accidents in Michigan that could be in another time zone eliminating all accidents west of long - 86.52
 aall <-aall[!(aall$STATE==27 & aall$LON< -86.52),]
