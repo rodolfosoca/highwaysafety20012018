@@ -1,0 +1,46 @@
+#this is version 1 of table 1 including accidents on easterna and western portions EST and CST
+#several datasets are needed.
+#some of the initial counts are not very efficient but they work
+
+#Row 1- Total number of accidents:
+count (ACC_ETCT_E_W, log_E == TRUE)
+# TRUE             11809
+# FALSE           222800
+
+#Row 2- Total number of drivers:
+count (pall_ETCT_E_W, log_E == TRUE)
+#FALSE           335087
+# TRUE             16817
+
+# Row # 3 females
+count (pall_ETCT_E_W, (log_E == FALSE & SEX== 2)) #western
+count (pall_ETCT_E_W, (log_E == TRUE & SEX== 2)) # Eastern
+
+# Row # 4 males
+count (pall_ETCT_E_W, (log_E == FALSE & SEX== 1)) #western
+count (pall_ETCT_E_W, (log_E == TRUE & SEX== 1)) # Eastern
+
+#creating table for chisquare comparison
+gendertable <- table (pall_ETCT_E_W$SEX, pall_ETCT_E_W$log_E)
+chisq.test(gendertable)
+
+#ROW #5 median age:
+median (pall_ETCT_E$AGE)
+#[1] 40
+median (pall_ETCT_W$AGE)
+#[1] 39
+t.test (pall_ETCT_E$AGE, pall_ETCT_W$AGE)
+
+# Row 6 drivers younger than 25 
+table (pall_ETCT_E_W$log_YOUNG, pall_ETCT_E_W$log_E)
+#percentages:
+prop.table(table(pall_ETCT_E_W$log_YOUNG, pall_ETCT_E_W$log_E),margin= 2) *100
+#Chisquarw
+chisq.test(table(pall_ETCT_E_W$log_YOUNG, pall_ETCT_E_W$log_E))
+
+#Row 7 Elder than 65
+table (pall_ETCT_E_W$log_ELDER, pall_ETCT_E_W$log_E)
+#percentage:
+prop.table (table(pall_ETCT_E_W$log_ELDER, pall_ETCT_E_W$log_E), margin=2)*100
+#chi square
+chisq.test (table(pall_ETCT_E_W$log_ELDER, pall_ETCT_E_W$log_E))
