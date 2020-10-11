@@ -1,81 +1,210 @@
-### this portion of the analysis uses the datasets 'aall' and 'pall' that were created previously. 
+###Creating the DATASETS that will be used to work
+
+#import each accident CSV file
+
+library(readr)
+a01 <- read_csv("a01.CSV")
+a02 <- read_csv("a02.CSV")
+a03 <- read_csv("a03.CSV")
+a04 <- read_csv("a04.CSV")
+a05 <- read_csv("a05.CSV")
+a06 <- read_csv("a06.CSV")
+a07 <- read_csv("a07.CSV")
+a08 <- read_csv("a08.CSV")
+a09 <- read_csv("a09.CSV")
+a10 <- read_csv("a10.CSV")
+a11 <- read_csv("a11.CSV")
+a12 <- read_csv("a12.CSV")
+a13 <- read_csv("a13.CSV")
+a14 <- read_csv("a14.CSV")
+a15 <- read_csv("a15.CSV")
+a16 <- read_csv("a16.CSV")
+a17 <- read_csv("a17.CSV")
+a18 <- read_csv("a18.CSV")
+
+# Adding a year column, making this column a "double" and then creating a unique ID that uses the forma year0000000. It needs 7 zeros to include all the ST IDS
+a01$YEAR <- 2001
+a01$YEAR <- as.double(a01$YEAR)
+a01$U_ID <- 20010000000 + a01$ST_CASE
+
+a02$YEAR <- 2002
+a02$YEAR <- as.double(a02$YEAR)
+a02$U_ID <- 20020000000 + a02$ST_CASE
+
+a03$YEAR <- 2003
+a03$YEAR <- as.double(a03$YEAR)
+a03$U_ID <- 20030000000 + a03$ST_CASE
+
+a04$YEAR <- 2004
+a04$YEAR <- as.double(a04$YEAR)
+a04$U_ID <- 20040000000 + a04$ST_CASE
+
+a05$YEAR <- 2005
+a05$YEAR <- as.double(a05$YEAR)
+a05$U_ID <- 20050000000 + a05$ST_CASE
+
+a06$YEAR <- 2006
+a06$YEAR <- as.double(a06$YEAR)
+a06$U_ID <- 20060000000 + a06$ST_CASE
 
 
+a07$YEAR <- 2007
+a07$YEAR <- as.double(a07$YEAR)
+a07$U_ID <- 20070000000 + a07$ST_CASE
 
-# excludes some states that behave abnormaly
-#02 Alaska, 04 Arizona, 15 Hawaii,  16 Idaho
-#18 Indiana, 21 Kentucky, 31 Nebraska, 38 North Dakota, 
-#46 South Dakota,47 Tennessee, 52 Virgin Islands, 43 Puerto Rico
+a08$YEAR <- 2008
+a08$YEAR <- as.double(a08$YEAR)
+a08$U_ID <- 20080000000 + a08$ST_CASE
 
-aall <-subset(aall, STATE==1 | STATE==5 | STATE==16 | STATE== 8 |STATE==9| STATE==10 | STATE==11|STATE==12|STATE==13|STATE==17| STATE==19| STATE==20| STATE==22| STATE==23|STATE==24|STATE==25|STATE==26|STATE==27|STATE==28|STATE==29|STATE==29|STATE==32|STATE==33|STATE==34|STATE==35|STATE==36|STATE==37|STATE==39|STATE==40|STATE==41|STATE==42|STATE==44|STATE==45|STATE==48|STATE==49|STATE==50|STATE==51|STATE==53|STATE==54|STATE==55|STATE==56,)
+a09$YEAR <- 2009
+a09$YEAR <- as.double(a09$YEAR)
+a09$U_ID <- 20090000000 + a09$ST_CASE
 
-#the same for people dataset
-pall <-subset(pall, STATE==1 | STATE==5 | STATE==16 | STATE== 8 |STATE==9| STATE==10 | STATE==11|STATE==12|STATE==13|STATE==17| STATE==19| STATE==20| STATE==22| STATE==23|STATE==24|STATE==25|STATE==26|STATE==27|STATE==28|STATE==29|STATE==29|STATE==32|STATE==33|STATE==34|STATE==35|STATE==36|STATE==37|STATE==39|STATE==40|STATE==41|STATE==42|STATE==44|STATE==45|STATE==48|STATE==49|STATE==50|STATE==51|STATE==53|STATE==54|STATE==55|STATE==56,)
+#For years 2010  deleting city variable, year is already included. Only need to create unique ID
+a10$CITY <- NULL
+a10$U_ID <- 20100000000 + a10$ST_CASE
 
-# some counties in Florida, Michigan, and Texas will be excluded since they are in a different timezone
+#For Year 2011, 2012,  only need to create unique id
+a11$U_ID <- 20110000000 + a11$ST_CASE
+a12$U_ID <- 20120000000 + a12$ST_CASE
 
-#eliminating accidents on the areas of florida that are outisde the ET by eliminating all accidents west of lon -84-28 which corresponds to Tallahassee 
-aall <-aall[!(aall$STATE==12 & aall$LON< -84.28),]
+#for 2013, deleting city and then creating unique ID
+a13$CITY <- NULL
+a13$U_ID <- 20130000000 + a13$ST_CASE
 
-#eliminating accidents in Michigan that could be in another time zone eliminating all accidents west of long - 86.52
-aall <-aall[!(aall$STATE==27 & aall$LON< -86.52),]
+#for 2014,2015 creating unique id
+a14$U_ID <- 20140000000 + a14$ST_CASE
+a15$U_ID <- 20150000000 + a15$ST_CASE
+a16$U_ID <- 20160000000 + a16$ST_CASE
+a17$U_ID <- 20170000000 + a17$ST_CASE
+a18$U_ID <- 20180000000 + a18$ST_CASE
 
-# eliminating accidents in texas that are west of Longitud -103 since they are on MT
-aall <-aall[!(aall$STATE==48 & aall$LON< -103),]
+#creating a dataset with all accidents and then deleting the individual datasets
+aall <- rbind(a01,a02,a03,a04,a05,a06,a07,a08, a09,a10,a11,a12,a13,a14,a15,a16,a17,a18)
+rm (a01,a02,a03,a04,a05,a06,a07,a08, a09,a10,a11,a12,a13,a14,a15,a16,a17,a18)
 
-#focusing only in states in the ET and CT zones, dropping all other states for both datasets
-AALL_CT <- subset (aall, STATE==1 | STATE==5 | STATE==17 | STATE==19 | STATE==20 | STATE==22 | STATE==27 | STATE==28 | STATE==29 | STATE==40 | STATE==48 | STATE==55,)
-AALL_ET <- subset (aall, STATE==9 | STATE==10 | STATE==11 | STATE==12 | STATE==13| STATE== 23 | STATE==24| STATE==25 | STATE== 26|STATE==33 | STATE==34|STATE==36|STATE==37 | STATE==39|STATE==44 | STATE==45 | STATE==50 | STATE==51 |STATE==54,)
+#save dataset as a csv file aall0118.csv to use later if needed
 
-# create a subset with accidents that happen in the extreme east of the ET
-ACC_ET_EAST <- subset (AALL_ET, LON > -71.25,)
+### Importing Person datafiles
+p01 <- read_csv("p01.csv")
+p02 <- read_csv("p02.csv")
+p03 <- read_csv("p03.csv")
+p04 <- read_csv("p04.csv")
+p05 <- read_csv("p05.csv")
+p06 <- read_csv("p06.csv")
+p07 <- read_csv("p07.csv")
+p08 <- read_csv("p08.csv")
+p09 <- read_csv("p09.csv")
+p10 <- read_csv("p10.csv")
+p11 <- read_csv("p11.csv")
+p12 <- read_csv("p12.csv")
+p13 <- read_csv("p13.csv")
+p14 <- read_csv("p14.csv")
+p15 <- read_csv("p15.csv")
+p16 <- read_csv("p16.csv")
+p17 <- read_csv("p17.csv")
+p18 <- read_csv("p18.csv")
 
-# create a subset of accidents on the West part 
-ACC_ET_WEST <- subset (AALL_ET, LON < -78.75, )
+#Creating a YEAR column for 2018
+p18$YEAR <- 2018
+p18$YEAR <- as.double (p18$YEAR)
 
-# create a subset with accidents that happen in the extreme east of the CT
-ACC_CT_EAST <- subset (AALL_CT, LON > -86.25,)
+#Removing Variable X1 for years 05 to 17
+p05$X1 <- NULL
+p06$X1 <- NULL
+p07$X1 <- NULL
+p08$X1 <- NULL
+p09$X1 <- NULL
+p10$X1 <- NULL
+p11$X1 <- NULL
+p12$X1 <- NULL
+p13$X1 <- NULL
+p14$X1 <- NULL
+p15$X1 <- NULL
+p16$X1 <- NULL
+p17$X1 <- NULL
 
-# create a subset of accidents on the West part 
-ACC_CT_WEST <- subset (AALL_CT, LON < -93.75, )
+#Creating a U-ID variable for Persons datasets
+p01$U_ID <- 20010000000 + p01$ST_CASE
+p02$U_ID <- 20020000000 + p02$ST_CASE
+p03$U_ID <- 20030000000 + p03$ST_CASE
+p04$U_ID <- 20040000000 + p04$ST_CASE
+p05$U_ID <- 20050000000 + p05$ST_CASE
+p06$U_ID <- 20060000000 + p06$ST_CASE
+p07$U_ID <- 20070000000 + p07$ST_CASE
+p08$U_ID <- 20080000000 + p08$ST_CASE
+p09$U_ID <- 20090000000 + p09$ST_CASE
+p10$U_ID <- 20100000000 + p10$ST_CASE
+p11$U_ID <- 20110000000 + p11$ST_CASE
+p12$U_ID <- 20120000000 + p12$ST_CASE
+p13$U_ID <- 20130000000 + p13$ST_CASE
+p14$U_ID <- 20140000000 + p14$ST_CASE
+p15$U_ID <- 20150000000 + p15$ST_CASE
+p16$U_ID <- 20160000000 + p16$ST_CASE
+p17$U_ID <- 20170000000 + p17$ST_CASE
+p18$U_ID <- 20180000000 + p18$ST_CASE
 
-#combining the accidents on ET E and CT E and then the same for West part
-#there is probably a more elegant way of doing this  insteat of divigind the accidents by time zone and then finding the extremes
-ACC_ETCT_E <- rbind (ACC_ET_EAST, ACC_CT_EAST)
-ACC_ETCT_W <- rbind (ACC_ET_WEST, ACC_CT_WEST)
+pall <- rbind (p01, p02, p03, p04, p05,p06,p07,p08,p09, p10,p11,p12,p13,p14,p15,p16,p17,p18)
 
-#Installing tidyverse to use dplyr. and then installing dplyr
+rm (p01, p02, p03, p04, p05,p06,p07,p08,p09, p10,p11,p12,p13,p14,p15,p16,p17,p18)
 
-install.packages ("tidyverse")
-library (dplyr)
+#This should lead to the creation of two datasets 'aall' and 'pall' as well as two CSV files that can be imported later if needed
 
+#aall has the information for all accidents in the entire US from 2001 and 2018
+#pall has the information for all the individuals involved in accidents between 2001 and 2018
 
+#removing accidents with times that do not match, either hour higher than 23 (some may have hour 24 which is not clear) and minute > 99
+aall <- subset (aall, HOUR <=23)
+aall <- subset (aall, MINUTE <=59)
+pall <- subset (pall, HOUR <=23)
+pall <- subset (pall, MINUTE <= 59)
 
-#creating two smaller datasets with drivers on ET and CT that have gender and are only drivers
-#As of 10/10/2020 this dataset is not needed. keeping it in case we are required to provide numbers for the entire time zones later
-PALL_ET <- subset (pall, STATE==9 | STATE==10 | STATE==11 | STATE==12 | STATE==13| STATE== 23 | STATE==24| STATE==25 | STATE== 26|STATE==33 | STATE==34|STATE==36|STATE==37 | STATE==39|STATE==44 | STATE==45 | STATE==50 | STATE==51 |STATE==54,)
-PALL_CT <- subset (pall, STATE==1 | STATE==5 | STATE==17 | STATE==19 | STATE==20 | STATE==22 | STATE==27 | STATE==28 | STATE==29 | STATE==40 | STATE==48 | STATE==55,)
+#Creating a variable to store the time of the accident as 1-24 rather than 0-1
+aall$HOUR1 <- aall$HOUR+1
+pall$HOUR1 <- pall$HOUR + 1
 
-#keeping only those records of pall that have a matching ID on ACC_ETCT east and west
-pall_ETCT_E <- semi_join(pall, ACC_ETCT_E, by="U_ID")
-pall_ETCT_W <- semi_join(pall, ACC_ETCT_W, by="U_ID")
+#Creating a variable to store time of accident by 30 minutes 0000 to 0030 will 0, 0030 to 0059 will 0.5
+aall$HOUR30 <- ifelse (aall$MINUTE >= 0 & aall$MINUTE <= 29, 0, 0.5)  
+pall$HOUR30 <- ifelse (pall$MINUTE >= 0 & pall$MINUTE <= 29, 0, 0.5) 
 
-#creating a logical variable to store if a person belongs to the East extreme of accidents =TRUE or WEST= FAlse
-pall_ETCT_E$log_E <- 'eastESTCST'
+#storing the time of accident as the hour+1 "+" the fraction of time it occurred.
+#an accident that happened at 0015 hours will show as: 1 (0 hours becomes 1 as HOUR1 and the minutes are between 00 and 29)
+#an accident happening at 0045 hours becomes 1.5 (o becomes 1 and then add 0.5 because the minutes are between 29 and 59)
 
+aall$HOUR30 <- aall$HOUR1 + aall$HOUR30
+pall$HOUR30 <- pall$HOUR1 + pall$HOUR30
 
-pall_ETCT_W$log_E <- 'westESTCST'
+#changing hour 30 to a number between 1 and 48, this number will be used to do a cycle later and count accidents by 30 minutes interval
+aall$HOUR30 <- ((aall$HOUR30-0.5)/0.5)
 
+#creating a logical value for young people based on age < = 25
+pall$log_YOUNG <- ifelse(pall$AGE <=25, 'YOUNG', 'NOTYOUNG')
 
-#combining the two variables into 'pall_ETCT_E_W',
-pall_ETCT_E_W <- rbind (pall_ETCT_E,pall_ETCT_W)
+#creating a logical value for young people based on age < = 65
+pall$log_ELDER <- ifelse(pall$AGE >=65, 'ELDER', 'NOTELDER')
 
-#creating a logical variable to store if an accident belongs to the East extreme of accidents =TRUE or WEST= FAlse
-ACC_ETCT_E$log_E <- 'eastESTCST'
+### keeping only those individuals that have a known gender: 1= male 2 female
+pall <- subset (pall, SEX <=2)
 
+#Creating a variable that stores gender as text MALE or FEmale:
+pall$GENDER <- ifelse(pall$SEX ==1, 'male', 'female')
 
-ACC_ETCT_W$log_E <- 'westESTCST'
+#keeping only drivers
+pall <- subset (pall, PER_TYP==1,)
 
+#Creating a variable if an accident happened between 0 and 4 hours
+pall$log_early <- ifelse(pall$HOUR <=4,'00to04AM', 'NOT00to04AM')
+aall$log_early <- ifelse(aall$HOUR <=4,'00to04AM', 'NOT00to04AM')
 
-#combining the two variables into 'ACC_ETCT_E_W', 
-ACC_ETCT_E_W <- rbind (ACC_ETCT_E,ACC_ETCT_W)
+#creating a variable to store if an accident happened during the second peak (0400 to 0800)
+pall$log_early <- ifelse((pall$HOUR >=5 & pall$HOUR <8),'secpeak', 'NOTsecpeak')
+aall$log_early <- ifelse((aall$HOUR >=5 & pall$HOUR <8),'secpeak', 'NOTsecpeak')
+
+#creating another variable that stores if an accident belongs to the l
+
+#Creating a variable if an accident happened late (15 to 23 hours)
+pall$log_late <- ifelse((pall$HOUR >=12& pall$HOUR <= 22),'12to21', 'NOT12to21')
+aall$log_late <- ifelse((aall$HOUR >=12& aall$HOUR <=22),'12to21', 'NOT12to21')
+
+#Eliminating accident records with latitude and longitude that is clearly outside the continental US points
+aall <- subset (aall, LAT < 60 & LAT > 24 & LON < -65 & LON > -125,)
