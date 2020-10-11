@@ -208,3 +208,9 @@ aall$log_late <- ifelse((aall$HOUR >=12& aall$HOUR <=22),'12to21', 'NOT12to21')
 
 #Eliminating accident records with latitude and longitude that is clearly outside the continental US points
 aall <- subset (aall, LAT < 60 & LAT > 24 & LON < -65 & LON > -125,)
+
+#Creating a variable to store the time of the accident as decimal.
+pall$TIME <- (pall$HOUR + (pall$MINUTE / 60))
+aall$TIME <- (aall$HOUR + (aall$MINUTE / 60))
+
+
