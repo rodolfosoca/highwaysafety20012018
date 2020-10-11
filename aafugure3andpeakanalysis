@@ -1,0 +1,61 @@
+# Creating a subset that contains only those accidents that happened before 0500
+morning_Accidentsonly_people <- subset(pall_ETCT_E_W, log_early == '00to04AM')
+
+#proportions table
+prop.table(table(morning_Accidentsonly_people$log_YOUNG, morning_Accidentsonly_people$log_E), margin =2)* 100
+
+chisq.test(table(morning_Accidentsonly_people$log_YOUNG, morning_Accidentsonly_people$log_E))
+
+#anaylis by genders:
+prop.table(table(morning_Accidentsonly_people$GENDER, morning_Accidentsonly_people$log_E), margin =2)* 100
+
+chisq.test(table(morning_Accidentsonly_people$GENDER, morning_Accidentsonly_people$log_E))
+
+## n statiscally significant difference.
+
+#### removing datasets that are not needed ####
+### many be needed for something else
+
+rm (ACC_CT_EAST,ACC_CT_WEST,ACC_ET_EAST,ACC_ET_WEST)
+rm (PALL_CT,PALL_ET)
+rm (aall, pall)
+
+# comparing peaks in accidents
+
+morning_Acc_onl_E <- subset(ACC_ETCT_E, log_early == '00to04AM')
+morning_Acc_onl_W <- subset(ACC_ETCT_W, log_early == '00to04AM')
+
+secondpeakacc_E <- subset(ACC_ETCT_E, log_secondpeak == 'secpeak')
+secondpeakacc_W <- subset(ACC_ETCT_W, log_secondpeak == 'secpeak')
+
+thirdpeakacc_E <- subset(ACC_ETCT_E, log_late == '12to21')
+thirdpeakacc_W <- subset(ACC_ETCT_W, log_late == '12to21')
+
+## cimparing the mean in times:
+
+# morning peak
+mean (morning_Acc_onl_E$TIME)
+# 2.061173
+mean (morning_Acc_onl_W$TIME)
+# 2.210768
+wilcox.test(morning_Acc_onl_E$TIME, morning_Acc_onl_W$TIME)
+# P < 0000.1
+
+# second peak
+mean (secondpeakacc_E$TIME)
+# 6.995789
+mean (secondpeakacc_W$TIME)
+# 6.982166
+wilcox.test(secondpeakacc_E$TIME, secondpeakacc_W$TIME)
+# p 0.635
+
+mean (thirdpeakacc_E$TIME)
+#17.4412
+
+mean (thirdpeakacc_W$TIME)
+#17.73755
+
+wilcox.test(thirdpeakacc_E$TIME, thirdpeakacc_W$TIME)
+#1.163e-14
+
+
