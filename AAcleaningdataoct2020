@@ -197,8 +197,8 @@ pall$log_early <- ifelse(pall$HOUR <=4,'00to04AM', 'NOT00to04AM')
 aall$log_early <- ifelse(aall$HOUR <=4,'00to04AM', 'NOT00to04AM')
 
 #creating a variable to store if an accident happened during the second peak (0400 to 0800)
-pall$log_early <- ifelse((pall$HOUR >=5 & pall$HOUR <8),'secpeak', 'NOTsecpeak')
-aall$log_early <- ifelse((aall$HOUR >=5 & pall$HOUR <8),'secpeak', 'NOTsecpeak')
+pall$log_secondpeak <- ifelse((pall$HOUR >=5 & pall$HOUR <=8),'secpeak', 'NOTsecpeak')
+aall$log_secondpeak <- ifelse((aall$HOUR >=5 & aall$HOUR <=8),'secpeak', 'NOTsecpeak')
 
 #creating another variable that stores if an accident belongs to the l
 
